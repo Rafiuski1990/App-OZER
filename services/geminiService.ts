@@ -1,18 +1,16 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { ShoppingItem, MarketResult, TransportMode, Coordinates } from "../types";
-
-// Removed top-level initialization to prevent crash on load if API_KEY is missing
-// const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const FUEL_COST_PER_KM_CAR = 0.60;
 const FUEL_COST_PER_KM_MOTO = 0.25;
 
 // Helper to safely get AI instance
 const getAI = () => {
+  // In Vite config we polyfilled process.env.API_KEY
   const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    console.warn("API Key not found in environment variables.");
+  
+  if (!apiKey || apiKey === "") {
+    console.warn("API Key missing. App will use fallback mode.");
     return null;
   }
   return new GoogleGenAI({ apiKey });
@@ -243,21 +241,15 @@ export const findAndCompareMarkets = async (
 
   try {
     const ai = getAI();
+    // Fallback if no AI key
     if (!ai) throw new Error("API Key missing");
 
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
       config: {
-        tools: [{ googleMaps: {} }],
-        toolConfig: {
-            retrievalConfig: {
-                latLng: {
-                    latitude: location.latitude,
-                    longitude: location.longitude
-                }
-            }
-        },
+        // NOTE: Google Maps tool removed as it is incompatible with responseSchema (JSON mode).
+        // The prompt context already includes market info.
         responseMimeType: "application/json",
         responseSchema: {
             type: Type.ARRAY,

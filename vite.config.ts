@@ -1,12 +1,20 @@
-
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-  plugins: [react()],
-  define: {
-    // Polyfill process.env for standard Node.js style usage in frontend code
-    // Fallback to empty string to prevent build crash/runtime undefined error if env var is missing
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || "")
-  }
+export default defineConfig(({ mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
+  const env = loadEnv(mode, (process as any).cwd(), '');
+
+  return {
+    plugins: [react()],
+    define: {
+      // CRITICAL: We define `process.env` as an object to prevent "ReferenceError: process is not defined"
+      // which causes White Screen of Death in many React apps migrated from Node.
+      'process.env': {
+        API_KEY: env.API_KEY || "",
+        NODE_ENV: mode
+      }
+    }
+  };
 });
