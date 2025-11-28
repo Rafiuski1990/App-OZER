@@ -1,4 +1,5 @@
 
+
 export interface UserProfile {
   name: string;
   cpf: string;
@@ -56,9 +57,15 @@ export interface ProductVariant {
   image: string;
 }
 
-export interface ProductDefinition {
+export interface BrandDefinition {
+  name: string;
   variants: ProductVariant[];
-  brands: string[];
+}
+
+export interface ProductDefinition {
+  brands: BrandDefinition[];
+  // Generic fallback variants if "Any Brand" is selected
+  variants: ProductVariant[];
 }
 
 export interface Promotion {

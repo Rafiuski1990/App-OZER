@@ -65,6 +65,25 @@ export const ShoppingList: React.FC<Props> = ({ items, onAddItem, onRemoveItem }
     return null;
   }, [name]);
 
+  // Determine which variants to show based on selected brand
+  const displayedVariants = useMemo(() => {
+    if (!matchedCategory) return [];
+
+    if (brand && brand !== 'outra_custom') {
+        const brandDef = matchedCategory.brands.find(b => b.name === brand);
+        if (brandDef && brandDef.variants.length > 0) {
+            return brandDef.variants;
+        }
+    }
+    // Fallback to generic variants if "Any Brand" is selected or Custom Brand is used
+    return matchedCategory.variants;
+  }, [matchedCategory, brand]);
+
+  // Reset variant when brand changes
+  useEffect(() => {
+    setSelectedVariant(null);
+  }, [brand]);
+
   // Handle focus for custom brand
   useEffect(() => {
     if (isCustomBrand && customBrandInputRef.current) {
@@ -83,7 +102,6 @@ export const ShoppingList: React.FC<Props> = ({ items, onAddItem, onRemoveItem }
 
   const handleVariantSelect = (variant: ProductVariant) => {
       setSelectedVariant(variant);
-      setBrand('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -152,14 +170,85 @@ export const ShoppingList: React.FC<Props> = ({ items, onAddItem, onRemoveItem }
           )}
         </div>
 
-        {/* 2. SPECIFIC VARIANT SELECTION (Dynamic) */}
+        {/* 2. BRAND SELECTION (Moved UP per request) */}
         {matchedCategory && (
+            <div className="flex gap-3">
+              <div className="flex-1 relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+                
+                {!isCustomBrand ? (
+                  <div className="relative">
+                    <select
+                      value={brand}
+                      onChange={(e) => {
+                        if (e.target.value === 'outra_custom') {
+                          setIsCustomBrand(true);
+                          setBrand('');
+                        } else {
+                          setBrand(e.target.value);
+                        }
+                      }}
+                      className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ozer-500 outline-none appearance-none bg-white text-gray-700"
+                    >
+                      <option value="">Qualquer Marca (Mais barato)</option>
+                      {matchedCategory.brands
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((b) => (
+                        <option key={b.name} value={b.name}>{b.name}</option>
+                      ))}
+                      <option value="outra_custom" className="font-semibold text-ozer-600">+ Outra marca</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
+                      <ChevronDown size={16} />
+                    </div>
+                  </div>
+                ) : (
+                   <div className="relative">
+                     <input
+                      ref={customBrandInputRef}
+                      type="text"
+                      value={brand}
+                      onChange={(e) => setBrand(e.target.value)}
+                      placeholder={isCustomBrand ? "Digite a marca..." : "Marca (Opcional)"}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ozer-500 outline-none"
+                      autoComplete="off"
+                    />
+                    {isCustomBrand && (
+                      <button 
+                        type="button" 
+                        onClick={() => setIsCustomBrand(false)}
+                        className="absolute right-2 top-3 text-xs text-ozer-600 underline hover:text-ozer-800"
+                      >
+                        Voltar
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="w-24">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Qtd</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value))}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ozer-500 outline-none"
+                />
+              </div>
+            </div>
+        )}
+
+        {/* 3. SPECIFIC VARIANT SELECTION (Dynamic Images based on Brand) */}
+        {matchedCategory && displayedVariants.length > 0 && (
             <div className="animate-fade-in bg-orange-50 p-3 rounded-lg border border-orange-100">
                 <label className="block text-sm font-bold text-ozer-700 mb-2">
-                    Escolha o tipo de {matchedCategory.key}:
+                    {brand && brand !== 'outra_custom' 
+                        ? `Opções de ${brand}:` 
+                        : `Escolha o tipo de ${matchedCategory.key}:`}
                 </label>
                 <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-3">
-                    {matchedCategory.variants.map((v) => (
+                    {displayedVariants.map((v) => (
                         <div 
                             key={v.id}
                             onClick={() => handleVariantSelect(v)}
@@ -189,71 +278,6 @@ export const ShoppingList: React.FC<Props> = ({ items, onAddItem, onRemoveItem }
                 </div>
             </div>
         )}
-        
-        {/* 3. BRAND AND QUANTITY */}
-        <div className="flex gap-3">
-          <div className="flex-1 relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Marca</label>
-            
-            {matchedCategory && !isCustomBrand ? (
-              <div className="relative">
-                <select
-                  value={brand}
-                  onChange={(e) => {
-                    if (e.target.value === 'outra_custom') {
-                      setIsCustomBrand(true);
-                      setBrand('');
-                    } else {
-                      setBrand(e.target.value);
-                    }
-                  }}
-                  className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ozer-500 outline-none appearance-none bg-white text-gray-700"
-                >
-                  <option value="">Qualquer Marca (Mais barato)</option>
-                  {matchedCategory.brands.sort().map((b) => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                  <option value="outra_custom" className="font-semibold text-ozer-600">+ Outra marca</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                  <ChevronDown size={16} />
-                </div>
-              </div>
-            ) : (
-               <div className="relative">
-                 <input
-                  ref={customBrandInputRef}
-                  type="text"
-                  value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
-                  placeholder={isCustomBrand ? "Digite a marca..." : "Marca (Opcional)"}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ozer-500 outline-none"
-                  autoComplete="off"
-                />
-                {isCustomBrand && (
-                  <button 
-                    type="button" 
-                    onClick={() => setIsCustomBrand(false)}
-                    className="absolute right-2 top-3 text-xs text-ozer-600 underline hover:text-ozer-800"
-                  >
-                    Voltar
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-          
-          <div className="w-24">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Qtd</label>
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(parseInt(e.target.value))}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ozer-500 outline-none"
-            />
-          </div>
-        </div>
 
         <button
           type="submit"

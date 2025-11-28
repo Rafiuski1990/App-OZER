@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Camera, Send, Check, Search, ChevronDown, Store, Tag } from 'lucide-react';
 import { ARARAS_MARKETS } from '../services/geminiService';
@@ -147,25 +148,7 @@ export const ContributionForm: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Variant Select */}
-                    {matchedCategory && (
-                        <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
-                             <span className="block text-xs font-bold text-ozer-700 mb-2">Qual tipo?</span>
-                             <div className="flex gap-2 overflow-x-auto pb-2">
-                                {matchedCategory.variants.map((v) => (
-                                    <div 
-                                        key={v.id}
-                                        onClick={() => setSelectedVariant(v)}
-                                        className={`flex-shrink-0 w-20 cursor-pointer rounded border-2 p-1 flex flex-col items-center text-center bg-white ${selectedVariant?.id === v.id ? 'border-ozer-500' : 'border-transparent'}`}
-                                    >
-                                        <img src={v.image} className="w-10 h-10 object-cover rounded mb-1" />
-                                        <span className="text-[9px] leading-tight truncate w-full">{v.name}</span>
-                                    </div>
-                                ))}
-                             </div>
-                        </div>
-                    )}
-
+                    {/* Brand Selection */}
                     <div className="flex gap-3">
                          <div className="flex-1">
                             <label className="block text-xs font-bold text-gray-500 mb-1">Marca</label>
@@ -176,7 +159,7 @@ export const ContributionForm: React.FC = () => {
                                     onChange={(e) => setBrand(e.target.value)}
                                 >
                                     <option value="">Selecione...</option>
-                                    {matchedCategory.brands.map(b => <option key={b} value={b}>{b}</option>)}
+                                    {matchedCategory.brands.map(b => <option key={b.name} value={b.name}>{b.name}</option>)}
                                     <option value="other">Outra</option>
                                 </select>
                             ) : (
@@ -196,6 +179,25 @@ export const ContributionForm: React.FC = () => {
                             />
                          </div>
                     </div>
+
+                    {/* Variant Select (Specific to Brand/Product) */}
+                    {matchedCategory && (
+                        <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
+                             <span className="block text-xs font-bold text-ozer-700 mb-2">Qual tipo?</span>
+                             <div className="flex gap-2 overflow-x-auto pb-2">
+                                {matchedCategory.variants.map((v) => (
+                                    <div 
+                                        key={v.id}
+                                        onClick={() => setSelectedVariant(v)}
+                                        className={`flex-shrink-0 w-20 cursor-pointer rounded border-2 p-1 flex flex-col items-center text-center bg-white ${selectedVariant?.id === v.id ? 'border-ozer-500' : 'border-transparent'}`}
+                                    >
+                                        <img src={v.image} className="w-10 h-10 object-cover rounded mb-1" />
+                                        <span className="text-[9px] leading-tight truncate w-full">{v.name}</span>
+                                    </div>
+                                ))}
+                             </div>
+                        </div>
+                    )}
 
                     <button type="submit" className="w-full bg-ozer-500 text-white text-sm font-bold py-3 rounded-lg hover:bg-ozer-600 flex items-center justify-center gap-2 mt-4 shadow-md">
                         <Send size={16} />

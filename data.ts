@@ -1,307 +1,430 @@
 
-import { ProductDefinition } from './types';
+import { ProductDefinition, ProductVariant } from './types';
+
+// --- HELPERS PARA IMAGENS ---
+
+// Static reliable Unsplash images to avoid redirects and CSP violations
+const IMAGES = {
+  meat: 'https://images.unsplash.com/photo-1603048297172-c92544798d5e?auto=format&fit=crop&q=80&w=400',
+  rice: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400',
+  beer: 'https://images.unsplash.com/photo-1623594215038-d621c172d734?auto=format&fit=crop&q=80&w=400',
+  milk: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&q=80&w=400',
+  bread: 'https://images.unsplash.com/photo-1598373182133-52452f7691ef?auto=format&fit=crop&q=80&w=400',
+  eggs: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&q=80&w=400',
+  oil: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400',
+  coffee: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&q=80&w=400',
+  detergent: 'https://images.unsplash.com/photo-1585833555201-9f57d692875b?auto=format&fit=crop&q=80&w=400',
+  fruits: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&q=80&w=400',
+  veggies: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&q=80&w=400',
+  pasta: 'https://images.unsplash.com/photo-1598965402089-897ce52e8355?auto=format&fit=crop&q=80&w=400',
+  cleaning: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&q=80&w=400',
+  generic: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400'
+};
+
+// Helper to get safe images
+const getImg = (keyword: string) => {
+    // Map keywords to safe images
+    if (keyword.includes('rice') || keyword.includes('arroz')) return IMAGES.rice;
+    if (keyword.includes('bean') || keyword.includes('feijao')) return 'https://images.unsplash.com/photo-1551463695-46c5354e7d4d?auto=format&fit=crop&q=80&w=400';
+    if (keyword.includes('meat') || keyword.includes('carne') || keyword.includes('picanha')) return IMAGES.meat;
+    if (keyword.includes('beer') || keyword.includes('cerveja')) return IMAGES.beer;
+    if (keyword.includes('milk') || keyword.includes('leite')) return IMAGES.milk;
+    if (keyword.includes('bread') || keyword.includes('pao')) return IMAGES.bread;
+    if (keyword.includes('egg') || keyword.includes('ovo')) return IMAGES.eggs;
+    if (keyword.includes('oil') || keyword.includes('oleo')) return IMAGES.oil;
+    if (keyword.includes('coffee') || keyword.includes('cafe')) return IMAGES.coffee;
+    if (keyword.includes('detergent')) return IMAGES.detergent;
+    if (keyword.includes('fruit')) return IMAGES.fruits;
+    if (keyword.includes('veg')) return IMAGES.veggies;
+    return IMAGES.generic;
+};
+
+// --- MERCEARIA BÁSICA ---
+
+const createRiceVariants = (): ProductVariant[] => [
+  { id: 'branco5', name: 'Branco 5kg', image: IMAGES.rice }, // Fixed ID for promos
+  { id: '1kg', name: 'Branco 1kg', image: IMAGES.rice },
+  { id: 'integral', name: 'Integral 1kg', image: 'https://images.unsplash.com/photo-1598218684705-d143c08b4952?auto=format&fit=crop&q=80&w=400' },
+  { id: 'parboilizado', name: 'Parboilizado 5kg', image: IMAGES.rice }
+];
+
+const createBeanVariants = (): ProductVariant[] => [
+  { id: 'carioca', name: 'Carioca 1kg', image: 'https://images.unsplash.com/photo-1551463695-46c5354e7d4d?auto=format&fit=crop&q=80&w=400' },
+  { id: 'preto', name: 'Preto 1kg', image: 'https://images.unsplash.com/photo-1633887012275-3b91ba3b5168?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createOilVariants = (): ProductVariant[] => [
+    { id: 'soja', name: 'Óleo de Soja 900ml', image: IMAGES.oil },
+    { id: 'milho', name: 'Óleo de Milho', image: IMAGES.oil },
+    { id: 'canola', name: 'Óleo de Canola', image: IMAGES.oil }
+];
+
+const createCoffeeVariants = (): ProductVariant[] => [
+    { id: 'po_500', name: 'Em Pó 500g', image: IMAGES.coffee },
+    { id: 'capsula', name: 'Cápsulas (10un)', image: 'https://images.unsplash.com/photo-1621360841011-2092c730e704?auto=format&fit=crop&q=80&w=400' },
+    { id: 'extra_forte', name: 'Extra Forte 500g', image: IMAGES.coffee }
+];
+
+const createSugarVariants = (): ProductVariant[] => [
+    { id: 'refinado', name: 'Refinado 1kg', image: 'https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&q=80&w=400' },
+    { id: 'cristal', name: 'Cristal 5kg', image: 'https://images.unsplash.com/photo-1612089531872-ea88d46294d8?auto=format&fit=crop&q=80&w=400' },
+    { id: 'demerara', name: 'Demerara', image: 'https://images.unsplash.com/photo-1585226776495-971c0800539c?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createPastaVariants = (): ProductVariant[] => [
+    { id: 'espaguete', name: 'Espaguete 500g', image: IMAGES.pasta },
+    { id: 'parafuso', name: 'Parafuso 500g', image: 'https://images.unsplash.com/photo-1551462147-37885acc36f1?auto=format&fit=crop&q=80&w=400' },
+    { id: 'penne', name: 'Penne', image: 'https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&q=80&w=400' }
+];
+
+// --- LATICÍNIOS & PADARIA ---
+
+const createMilkVariants = (): ProductVariant[] => [
+    { id: 'integral', name: 'Integral 1L', image: IMAGES.milk },
+    { id: 'desnatado', name: 'Desnatado 1L', image: IMAGES.milk },
+    { id: 'semi', name: 'Semi-Desnatado 1L', image: IMAGES.milk },
+    { id: 'po', name: 'Em Pó (Lata)', image: 'https://images.unsplash.com/photo-1634629377227-2c2448ec889a?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createCheeseVariants = (): ProductVariant[] => [
+    { id: 'mussarela_fatiada', name: 'Mussarela Fatiada (150g)', image: 'https://images.unsplash.com/photo-1582236895392-f045095d3a57?auto=format&fit=crop&q=80&w=400' },
+    { id: 'prato', name: 'Queijo Prato (150g)', image: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&q=80&w=400' },
+    { id: 'minas', name: 'Queijo Minas Frescal', image: 'https://images.unsplash.com/photo-1599335441584-601e389df012?auto=format&fit=crop&q=80&w=400' },
+    { id: 'requeijao', name: 'Requeijão Copo', image: 'https://images.unsplash.com/photo-1624806992066-5ffcf519848f?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createYogurtVariants = (): ProductVariant[] => [
+    { id: 'natural', name: 'Natural 170g', image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&q=80&w=400' },
+    { id: 'morango', name: 'Polpa Morango (Bandeja)', image: 'https://images.unsplash.com/photo-1571212515416-f223d6385720?auto=format&fit=crop&q=80&w=400' },
+    { id: 'grego', name: 'Grego', image: 'https://images.unsplash.com/photo-1551062635-4309a41c107f?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createBreadVariants = (): ProductVariant[] => [
+    { id: 'frances', name: 'Pão Francês (Unidade)', image: IMAGES.bread },
+    { id: 'forma_trad', name: 'Pão de Forma Tradicional', image: 'https://images.unsplash.com/photo-1619535860434-7f0863384d41?auto=format&fit=crop&q=80&w=400' },
+    { id: 'forma_int', name: 'Pão de Forma Integral', image: 'https://images.unsplash.com/photo-1509440159596-0249088b7280?auto=format&fit=crop&q=80&w=400' }
+];
+
+// --- CARNES & FRIOS ---
+
+const createMeatVariants = (): ProductVariant[] => [
+  { id: 'kg', name: 'Peça/Kg', image: IMAGES.meat },
+  { id: 'fatiado', name: 'Bifes/Fatiado', image: 'https://images.unsplash.com/photo-1551028150-64b9f398f678?auto=format&fit=crop&q=80&w=400' },
+  { id: 'moida', name: 'Carne Moída 500g', image: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?auto=format&fit=crop&q=80&w=400' },
+  { id: 'picanha', name: 'Picanha', image: 'https://images.unsplash.com/photo-1558030006-4b50986dc576?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createChickenVariants = (): ProductVariant[] => [
+    { id: 'peito_file', name: 'Filé de Peito 1kg', image: 'https://images.unsplash.com/photo-1612077330269-788066d5a58b?auto=format&fit=crop&q=80&w=400' },
+    { id: 'inteiro', name: 'Frango Inteiro', image: 'https://images.unsplash.com/photo-1518492104633-130d0cc84637?auto=format&fit=crop&q=80&w=400' },
+    { id: 'coxa', name: 'Coxa e Sobrecoxa', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createColdCutsVariants = (): ProductVariant[] => [
+    { id: 'presunto', name: 'Presunto Fatiado (100g)', image: 'https://images.unsplash.com/photo-1605307373809-56d78a846176?auto=format&fit=crop&q=80&w=400' },
+    { id: 'mortadela', name: 'Mortadela (100g)', image: 'https://images.unsplash.com/photo-1589173322238-6b196883e390?auto=format&fit=crop&q=80&w=400' },
+    { id: 'peito_peru', name: 'Peito de Peru (100g)', image: 'https://images.unsplash.com/photo-1609123896229-873b88934446?auto=format&fit=crop&q=80&w=400' }
+];
+
+// --- BEBIDAS ---
+
+const createBeerVariants = (): ProductVariant[] => [
+  { id: 'lata350', name: 'Lata 350ml', image: IMAGES.beer },
+  { id: 'latao', name: 'Latão 473ml', image: IMAGES.beer },
+  { id: 'longneck', name: 'Long Neck 330ml', image: 'https://images.unsplash.com/photo-1618885472179-5e474019f2a9?auto=format&fit=crop&q=80&w=400' },
+  { id: '600ml', name: 'Garrafa 600ml', image: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createSodaVariants = (): ProductVariant[] => [
+    { id: '2l', name: 'Garrafa 2 Litros', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' },
+    { id: 'lata', name: 'Lata 350ml', image: 'https://images.unsplash.com/photo-1622483767128-3a8e21753cb1?auto=format&fit=crop&q=80&w=400' },
+    { id: 'zero', name: 'Versão Zero/Light', image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&q=80&w=400' }
+];
+
+// --- LIMPEZA & HIGIENE ---
+
+const createLaundryVariants = (): ProductVariant[] => [
+    { id: 'po', name: 'Sabão em Pó 800g/1kg', image: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&q=80&w=400' },
+    { id: 'liquido', name: 'Sabão Líquido 3L', image: 'https://images.unsplash.com/photo-1585833555201-9f57d692875b?auto=format&fit=crop&q=80&w=400' },
+    { id: 'amaciante', name: 'Amaciante 2L', image: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createCleaningVariants = (): ProductVariant[] => [
+    { id: 'detergente', name: 'Detergente 500ml', image: IMAGES.detergent },
+    { id: 'desinfetante', name: 'Desinfetante', image: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?auto=format&fit=crop&q=80&w=400' },
+    { id: 'agua_sanitaria', name: 'Água Sanitária 2L', image: 'https://images.unsplash.com/photo-1585833555201-9f57d692875b?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createPersonalCareVariants = (): ProductVariant[] => [
+    { id: 'shampoo', name: 'Shampoo', image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=400' },
+    { id: 'condicionador', name: 'Condicionador', image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=400' },
+    { id: 'sabonete', name: 'Sabonete Barra', image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?auto=format&fit=crop&q=80&w=400' },
+    { id: 'dental', name: 'Creme Dental', image: 'https://images.unsplash.com/photo-1559591937-e1dc329ef226?auto=format&fit=crop&q=80&w=400' },
+    { id: 'desodorante', name: 'Desodorante', image: 'https://images.unsplash.com/photo-1616688587635-4e782d8c3639?auto=format&fit=crop&q=80&w=400' }
+];
+
+const createToiletPaperVariants = (): ProductVariant[] => [
+    { id: 'f_dupla_12', name: 'Folha Dupla 12 Rolos', image: 'https://images.unsplash.com/photo-1584622956247-4c8d7b0553db?auto=format&fit=crop&q=80&w=400' },
+    { id: 'f_dupla_4', name: 'Folha Dupla 4 Rolos', image: 'https://images.unsplash.com/photo-1584622956247-4c8d7b0553db?auto=format&fit=crop&q=80&w=400' }
+];
+
+// --- HORTIFRUTI ---
+
+const createFruitVariants = (): ProductVariant[] => [
+    { id: 'kg', name: 'Preço por Kg', image: IMAGES.fruits },
+    { id: 'unidade', name: 'Unidade/Bandeja', image: IMAGES.fruits }
+];
+
+const createVegVariants = (): ProductVariant[] => [
+    { id: 'kg', name: 'Preço por Kg', image: IMAGES.veggies },
+    { id: 'bandeja', name: 'Bandeja/Embalado', image: IMAGES.veggies }
+];
+
+
+// ==========================================
+// CATÁLOGO GIGANTE UNIFICADO
+// ==========================================
 
 export const PRODUCT_CATALOG: Record<string, ProductDefinition> = {
-  // --- CARNES & PROTEÍNAS ---
-  'carne': {
-    variants: [
-      { id: 'acem', name: 'Acém (kg)', image: 'https://images.unsplash.com/photo-1615937691194-97cafc3bc3cf?auto=format&fit=crop&q=80&w=400' },
-      { id: 'picanha', name: 'Picanha (kg)', image: 'https://images.unsplash.com/photo-1606213941427-463d12d4a5b4?auto=format&fit=crop&q=80&w=400' },
-      { id: 'patinho', name: 'Patinho (kg)', image: 'https://images.unsplash.com/photo-1551028150-64b9f398f678?auto=format&fit=crop&q=80&w=400' },
-      { id: 'contra', name: 'Contra Filé', image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&q=80&w=400' },
-      { id: 'moida', name: 'Carne Moída', image: 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?auto=format&fit=crop&q=80&w=400' },
-    ],
-    brands: ['Friboi', 'Maturatta', 'Swift', 'Montana', 'Açougue Local']
-  },
-  'frango': {
-    variants: [
-      { id: 'peito', name: 'Peito (kg)', image: 'https://images.unsplash.com/photo-1612077330269-788066d5a58b?auto=format&fit=crop&q=80&w=400' },
-      { id: 'coxa', name: 'Coxa/Sobrecoxa', image: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&q=80&w=400' },
-      { id: 'asa', name: 'Asinha', image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&q=80&w=400' },
-      { id: 'inteiro', name: 'Inteiro', image: 'https://images.unsplash.com/photo-1518492104633-130d0cc84637?auto=format&fit=crop&q=80&w=400' },
-      { id: 'empanado', name: 'Empanado/Nuggets', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Chicken_Nuggets.jpg/640px-Chicken_Nuggets.jpg' },
-    ],
-    brands: ['Sadia', 'Perdigão', 'Seara', 'Aurora', 'Copacol']
-  },
-  'linguica': {
-    variants: [
-      { id: 'toscana', name: 'Toscana', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Sausages_in_supermarket.jpg/640px-Sausages_in_supermarket.jpg' },
-      { id: 'calabresa', name: 'Calabresa', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Chorizo_de_Pamplona_fatiado.jpg/640px-Chorizo_de_Pamplona_fatiado.jpg' },
-      { id: 'frango', name: 'De Frango', image: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&q=80&w=400' }
-    ],
-    brands: ['Sadia', 'Perdigão', 'Aurora', 'Seara']
-  },
-  'peixe': {
-    variants: [
-      { id: 'tilapia', name: 'Filé Tilápia', image: 'https://images.unsplash.com/photo-1511208687438-2c5a5abb810c?auto=format&fit=crop&q=80&w=400' },
-      { id: 'sardinha', name: 'Sardinha (Lata)', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Canned_sardines_01.jpg/640px-Canned_sardines_01.jpg' },
-      { id: 'atum', name: 'Atum (Lata)', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Canned_tuna.jpg/640px-Canned_tuna.jpg' }
-    ],
-    brands: ['Gomes da Costa', 'Coqueiro', 'Peixaria Local', 'Swift']
-  },
-
-  // --- MERCEARIA BÁSICA ---
+  // === MERCEARIA BÁSICA ===
   'arroz': {
-    variants: [
-      { id: 'branco5', name: 'Branco (5kg)', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' }, 
-      { id: 'branco1', name: 'Branco (1kg)', image: 'https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?auto=format&fit=crop&q=80&w=400' }, 
-      { id: 'integral', name: 'Integral', image: 'https://images.unsplash.com/photo-1598218684705-d143c08b4952?auto=format&fit=crop&q=80&w=400' },
-    ],
-    brands: ['Tio João', 'Camil', 'Prato Fino', 'Emoções', 'Qualitá']
+    variants: createRiceVariants(),
+    brands: [
+      { name: 'Camil', variants: createRiceVariants() },
+      { name: 'Tio João', variants: createRiceVariants() },
+      { name: 'Prato Fino', variants: createRiceVariants() },
+      { name: 'Fantástico', variants: createRiceVariants() }
+    ]
   },
   'feijao': {
-    variants: [
-      { id: 'carioca', name: 'Carioca', image: 'https://images.unsplash.com/photo-1551462147-37885acc36f1?auto=format&fit=crop&q=80&w=400' },
-      { id: 'preto', name: 'Preto', image: 'https://images.unsplash.com/photo-1633887012351-866440266df1?auto=format&fit=crop&q=80&w=400' },
-    ],
-    brands: ['Camil', 'Kicaldo', 'Tio João', 'Broto Legal']
+    variants: createBeanVariants(),
+    brands: [
+        { name: 'Camil', variants: createBeanVariants() },
+        { name: 'Kicaldo', variants: createBeanVariants() },
+        { name: 'Broto Legal', variants: createBeanVariants() }
+    ]
   },
   'macarrao': {
-      variants: [
-          { id: 'espaguete', name: 'Espaguete', image: 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&q=80&w=400' },
-          { id: 'penne', name: 'Penne', image: 'https://images.unsplash.com/photo-1608835291093-394b0c943a75?auto=format&fit=crop&q=80&w=400' },
-          { id: 'parafuso', name: 'Parafuso', image: 'https://images.unsplash.com/photo-1551462147-37885acc36f1?auto=format&fit=crop&q=80&w=400' },
-          { id: 'instantaneo', name: 'Miojo', image: 'https://images.unsplash.com/photo-1612927601601-663840473e65?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Galo', 'Adria', 'Renata', 'Dona Benta', 'Barilla', 'Nissin']
+      variants: createPastaVariants(),
+      brands: [
+          { name: 'Galo', variants: createPastaVariants() },
+          { name: 'Adria', variants: createPastaVariants() },
+          { name: 'Renata', variants: createPastaVariants() },
+          { name: 'Barilla', variants: createPastaVariants() }
+      ]
   },
   'oleo': {
-      variants: [
-          { id: 'soja', name: 'Óleo de Soja', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd0347?auto=format&fit=crop&q=80&w=400' },
-          { id: 'milho', name: 'Óleo de Milho', image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400' },
-          { id: 'azeite', name: 'Azeite Oliva', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd0347?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Liza', 'Soya', 'Concórdia', 'Gallo', 'Andorinha']
-  },
-  'cafe': {
-      variants: [
-          { id: 'po', name: 'Em Pó (500g)', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&q=80&w=400' },
-          { id: 'capsula', name: 'Cápsula', image: 'https://images.unsplash.com/photo-1615354508006-8d591b617079?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Pilão', 'Melitta', '3 Corações', 'Caboclo']
+      variants: createOilVariants(),
+      brands: [
+          { name: 'Liza', variants: createOilVariants() },
+          { name: 'Soya', variants: createOilVariants() },
+          { name: 'Concórdia', variants: createOilVariants() }
+      ]
   },
   'acucar': {
-      variants: [
-          { id: 'refinado', name: 'Refinado (1kg)', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' },
-          { id: 'cristal', name: 'Cristal (5kg)', image: 'https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['União', 'Caravelas', 'Da Barra', 'Guarani']
+      variants: createSugarVariants(),
+      brands: [
+          { name: 'União', variants: createSugarVariants() },
+          { name: 'Da Barra', variants: createSugarVariants() },
+          { name: 'Caravelas', variants: createSugarVariants() }
+      ]
   },
   'sal': {
-      variants: [{ id: 'refinado', name: 'Sal Refinado', image: 'https://images.unsplash.com/photo-1518110925495-5921c62a8594?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Cisne', 'Lebre', 'Nobre']
+      variants: [{id:'1kg', name:'1kg', image: 'https://images.unsplash.com/photo-1518110925495-569698b4f9f1?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Cisne', variants:[{id:'1kg', name:'Refinado 1kg', image:'https://images.unsplash.com/photo-1518110925495-569698b4f9f1?auto=format&fit=crop&q=80&w=400'}]}]
   },
-  'aveia': {
-      variants: [
-          { id: 'flocos', name: 'Em Flocos', image: 'https://images.unsplash.com/photo-1614732187685-64903328eb9f?auto=format&fit=crop&q=80&w=400' },
-          { id: 'farelo', name: 'Farelo', image: 'https://images.unsplash.com/photo-1509456593530-9430cb28807d?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Quaker', 'Nestlé', 'Mãe Terra']
+  'cafe': {
+      variants: createCoffeeVariants(),
+      brands: [
+          { name: 'Pilão', variants: createCoffeeVariants() },
+          { name: '3 Corações', variants: createCoffeeVariants() },
+          { name: 'Melitta', variants: createCoffeeVariants() },
+          { name: 'Caboclo', variants: createCoffeeVariants() }
+      ]
   },
-  'pipoca': {
-      variants: [
-          { id: 'milho', name: 'Milho Pipoca', image: 'https://images.unsplash.com/photo-1569245585093-61a7a28e8264?auto=format&fit=crop&q=80&w=400' },
-          { id: 'micro', name: 'Microondas', image: 'https://images.unsplash.com/photo-1578849278619-a73a94e63ce0?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Yoki', 'Camil', 'Pipoquinha']
+  'farinha': {
+      variants: [{id: 'trigo', name:'Trigo 1kg', image: 'https://images.unsplash.com/photo-1627460980594-e362e0802c65?auto=format&fit=crop&q=80&w=400'}, {id: 'mandioca', name: 'Mandioca', image: 'https://images.unsplash.com/photo-1627460980594-e362e0802c65?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Dona Benta', variants: [{id: 'trigo', name:'Trigo 1kg', image: 'https://images.unsplash.com/photo-1627460980594-e362e0802c65?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Renata', variants: [{id: 'trigo', name:'Trigo 1kg', image: 'https://images.unsplash.com/photo-1627460980594-e362e0802c65?auto=format&fit=crop&q=80&w=400'}]}]
   },
-  'granola': {
-      variants: [{ id: 'tradicional', name: 'Tradicional', image: 'https://images.unsplash.com/photo-1517093734098-243542095368?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Mãe Terra', 'Kelloggs', 'Tia Sônia']
-  },
-  'molho de tomate': {
-      variants: [
-          { id: 'sache', name: 'Sachê (340g)', image: 'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&q=80&w=400' },
-          { id: 'lata', name: 'Lata/Peneirado', image: 'https://images.unsplash.com/photo-1565158260477-93ae3e54b61d?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Elefante', 'Pomarola', 'Quero', 'Fugini']
-  },
-  'condimentos': {
-     variants: [
-         { id: 'ketchup', name: 'Ketchup', image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400' },
-         { id: 'maionese', name: 'Maionese', image: 'https://images.unsplash.com/photo-1585238342024-78d387f4a707?auto=format&fit=crop&q=80&w=400' },
-         { id: 'mostarda', name: 'Mostarda', image: 'https://images.unsplash.com/photo-1528750997573-59b8b6ee5649?auto=format&fit=crop&q=80&w=400' },
-         { id: 'pimenta', name: 'Molho Pimenta', image: 'https://images.unsplash.com/photo-1584342371457-418b7c7b8971?auto=format&fit=crop&q=80&w=400' }
-     ],
-     brands: ['Heinz', 'Hellmanns', 'Hemmer', 'Arisco', 'Quero']
+  'molho tomate': {
+      variants: [{id: 'sache', name:'Sachê 340g', image: 'https://images.unsplash.com/photo-1579207860166-d3c2a23330f8?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Pomarola', variants: [{id: 'sache', name:'Tradicional Sachê', image: 'https://images.unsplash.com/photo-1579207860166-d3c2a23330f8?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Elefante', variants: [{id: 'lata', name:'Lata', image: 'https://images.unsplash.com/photo-1579207860166-d3c2a23330f8?auto=format&fit=crop&q=80&w=400'}]}]
   },
 
-  // --- PADARIA ---
-  'pao': {
-      variants: [
-          { id: 'frances', name: 'Pão Francês', image: 'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&q=80&w=400' },
-          { id: 'forma', name: 'Pão de Forma', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=400' },
-          { id: 'integral', name: 'Forma Integral', image: 'https://images.unsplash.com/photo-1598373182133-52452f7691f6?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Pullman', 'Wickbold', 'Seven Boys', 'Bauducco', 'Padaria Local']
-  },
-  'bolo': {
-      variants: [
-          { id: 'pronto', name: 'Bolo Pronto', image: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=400' },
-          { id: 'mistura', name: 'Mistura Bolo', image: 'https://images.unsplash.com/photo-1586788224331-947f68671cf1?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Pullman', 'Bauducco', 'Dona Benta', 'Renata']
-  },
-  'torradas': {
-      variants: [{ id: 'pacote', name: 'Pacote 140g', image: 'https://images.unsplash.com/photo-1584776293029-4bd7c0fe12b3?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Bauducco', 'Wickbold', 'Magic Toast']
-  },
-  
-  // --- FRIOS & LATICÍNIOS ---
+  // === LATICÍNIOS & FRIOS ===
   'leite': {
-      variants: [
-          { id: 'integral', name: 'Integral (1L)', image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&q=80&w=400' },
-          { id: 'desnatado', name: 'Desnatado (1L)', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Italac', 'Piracanjuba', 'Ninho', 'Parmalat', 'Líder']
-  },
-  'queijo': {
-      variants: [
-          { id: 'mussarela', name: 'Mussarela', image: 'https://images.unsplash.com/photo-1588195538326-c5f1f23fa438?auto=format&fit=crop&q=80&w=400' },
-          { id: 'prato', name: 'Prato', image: 'https://images.unsplash.com/photo-1624806992097-90c375276e03?auto=format&fit=crop&q=80&w=400' },
-          { id: 'minas', name: 'Minas Frescal', image: 'https://images.unsplash.com/photo-1486297678749-171b36097e66?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Sadia', 'Perdigão', 'Vigor', 'Polenghi', 'Italac']
-  },
-  'presunto': {
-      variants: [{ id: 'fatiado', name: 'Fatiado (kg)', image: 'https://images.unsplash.com/photo-1524438418049-ab2acb7aa48f?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Sadia', 'Perdigão', 'Seara', 'Aurora']
-  },
-  'mortadela': {
-      variants: [{ id: 'defumada', name: 'Defumada (kg)', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Mortadella_Bologna.jpg/640px-Mortadella_Bologna.jpg' }],
-      brands: ['Sadia', 'Perdigão', 'Ceratti', 'Marba']
+      variants: createMilkVariants(),
+      brands: [
+          { name: 'Parmalat', variants: createMilkVariants() },
+          { name: 'Piracanjuba', variants: createMilkVariants() },
+          { name: 'Itambé', variants: createMilkVariants() },
+          { name: 'Líder', variants: createMilkVariants() }
+      ]
   },
   'manteiga': {
-      variants: [
-          { id: 'pote', name: 'Manteiga Pote', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400' },
-          { id: 'margarina', name: 'Margarina', image: 'https://images.unsplash.com/photo-1623855244183-52fd8d3ce2f7?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Aviação', 'Qualy', 'Vigor', 'Doriana', 'Itambé']
+      variants: [{id: 'pote', name: 'Pote 200g', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'}, {id: 'barra', name: 'Barra', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Aviação', variants:[{id: 'pote', name: 'Pote 200g', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Batavo', variants:[{id: 'pote', name: 'Pote 200g', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'}]}]
+  },
+  'margarina': {
+      variants: [{id: '500g', name:'500g', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Qualy', variants:[{id: '500g', name:'500g', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Doriana', variants:[{id: '500g', name:'500g', image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'}]}]
+  },
+  'queijo': {
+      variants: createCheeseVariants(),
+      brands: [{name: 'Sadia', variants: createCheeseVariants()}, {name: 'President', variants: createCheeseVariants()}, {name: 'Polenghi', variants: createCheeseVariants()}]
   },
   'iogurte': {
-      variants: [
-          { id: 'garrafa', name: 'Garrafa 1Kg', image: 'https://images.unsplash.com/photo-1571212515416-f4323274cc6c?auto=format&fit=crop&q=80&w=400' },
-          { id: 'grego', name: 'Grego', image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Danone', 'Vigor', 'Nestlé', 'Itambé']
+      variants: createYogurtVariants(),
+      brands: [{name: 'Danone', variants: createYogurtVariants()}, {name: 'Vigor', variants: createYogurtVariants()}, {name: 'Nestlé', variants: createYogurtVariants()}]
   },
-  'sorvete': {
-      variants: [{ id: 'pote', name: 'Pote 2L', image: 'https://images.unsplash.com/photo-1576506295286-5cda18df43e7?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Kibon', 'Nestlé', 'Marca Própria']
+  'ovos': {
+      variants: [{id: 'duzia', name: 'Dúzia (12 un)', image: IMAGES.eggs}, {id: 'cartela', name: 'Cartela (30 un)', image: IMAGES.eggs}],
+      brands: [{name: 'Granja Local', variants: [{id: 'duzia', name: 'Dúzia Branco', image: IMAGES.eggs}]}, {name: 'Mantiqueira', variants: [{id: 'duzia', name: 'Ovos Vermelhos', image: IMAGES.eggs}]}]
   },
-
-  // --- HORTIFRUTI ---
-  'tomate': { variants: [{ id: 'kg', name: 'Tomate (kg)', image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'alface': { variants: [{ id: 'un', name: 'Alface (un)', image: 'https://images.unsplash.com/photo-1622206151226-18ca2c958a2f?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'cebola': { variants: [{ id: 'kg', name: 'Cebola (kg)', image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'batata': { variants: [{ id: 'inglesa', name: 'Inglesa (kg)', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'cenoura': { variants: [{ id: 'kg', name: 'Cenoura (kg)', image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'maca': { variants: [{ id: 'gala', name: 'Gala (kg)', image: 'https://images.unsplash.com/photo-1579613832125-5d34813ffe68?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'banana': { variants: [{ id: 'nanica', name: 'Nanica (kg)', image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'laranja': { variants: [{ id: 'pera', name: 'Pera (kg)', image: 'https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=400' }], brands: ['Hortifruti'] },
-  'legumes congelados': {
-      variants: [{ id: 'seleta', name: 'Seleta Legumes', image: 'https://images.unsplash.com/photo-1629857948332-628d0517703f?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Daucy', 'Seara', 'Sadia']
+  'presunto': {
+      variants: createColdCutsVariants(),
+      brands: [{name: 'Sadia', variants: createColdCutsVariants()}, {name: 'Seara', variants: createColdCutsVariants()}, {name: 'Perdigão', variants: createColdCutsVariants()}]
   },
 
-  // --- BEBIDAS ---
-  'agua': {
-      variants: [
-          { id: '500', name: 'Garrafa 500ml', image: 'https://images.unsplash.com/photo-1616118132534-381148898bb4?auto=format&fit=crop&q=80&w=400' },
-          { id: '1500', name: 'Garrafa 1.5L', image: 'https://images.unsplash.com/photo-1603394630850-69b3ca8121ca?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Crystal', 'Bonafont', 'Minalba', 'Lindoya']
+  // === PADARIA ===
+  'pao': {
+      variants: createBreadVariants(),
+      brands: [{name: 'Pullman', variants: createBreadVariants()}, {name: 'Seven Boys', variants: createBreadVariants()}, {name: 'Bauducco', variants: createBreadVariants()}, {name: 'Padaria Própria', variants: [{id:'frances', name:'Pão Francês Fresco', image: IMAGES.bread}]}]
+  },
+  'biscoito': {
+      variants: [{id: 'recheado', name: 'Recheado', image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=400'}, {id: 'salgado', name: 'Água e Sal', image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Bauducco', variants:[{id: 'recheado', name: 'Recheado', image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Nestlé', variants:[{id: 'recheado', name: 'Passatempo', image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Mabel', variants:[{id: 'rosquinha', name: 'Rosquinha', image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=400'}]}]
+  },
+
+  // === CARNES ===
+  'carne': {
+    variants: createMeatVariants(),
+    brands: [
+      { name: 'Friboi', variants: createMeatVariants() },
+      { name: 'Maturatta', variants: [{ id: 'bbq', name: 'Peça Churrasco', image: 'https://images.unsplash.com/photo-1606213941427-463d12d4a5b4?auto=format&fit=crop&q=80&w=400' }] },
+      { name: 'Swift', variants: createMeatVariants() },
+      { name: 'Açougue Local', variants: [{ id: 'fresco', name: 'Corte Fresco', image: IMAGES.meat }] }
+    ]
+  },
+  'frango': {
+    variants: createChickenVariants(),
+    brands: [
+        { name: 'Sadia', variants: createChickenVariants()},
+        { name: 'Seara', variants: createChickenVariants()},
+        { name: 'Perdigão', variants: createChickenVariants()}
+    ]
+  },
+  'peixe': {
+      variants: [{id: 'file', name: 'Filé de Tilápia', image: 'https://images.unsplash.com/photo-1517409425167-a690041d830b?auto=format&fit=crop&q=80&w=400'}, {id: 'posta', name: 'Posta', image: 'https://images.unsplash.com/photo-1517409425167-a690041d830b?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Costa Sul', variants:[{id: 'file', name: 'Filé 500g', image: 'https://images.unsplash.com/photo-1517409425167-a690041d830b?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Peixaria', variants:[{id: 'fresco', name: 'Peixe Fresco', image: 'https://images.unsplash.com/photo-1517409425167-a690041d830b?auto=format&fit=crop&q=80&w=400'}]}]
+  },
+
+  // === BEBIDAS ===
+  'cerveja': {
+      variants: createBeerVariants(),
+      brands: [
+          { name: 'Heineken', variants: createBeerVariants() },
+          { name: 'Amstel', variants: createBeerVariants() },
+          { name: 'Brahma', variants: createBeerVariants() },
+          { name: 'Skol', variants: createBeerVariants() },
+          { name: 'Spaten', variants: createBeerVariants() }
+      ]
   },
   'refrigerante': {
-      variants: [
-          { id: '2l', name: 'Garrafa 2L', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' },
-          { id: 'lata', name: 'Lata 350ml', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Coca-Cola', 'Guaraná', 'Pepsi', 'Fanta', 'Sprite']
+      variants: createSodaVariants(),
+      brands: [
+          { name: 'Coca-Cola', variants: createSodaVariants() },
+          { name: 'Guaraná Antarctica', variants: createSodaVariants() },
+          { name: 'Pepsi', variants: createSodaVariants() },
+          { name: 'Fanta', variants: createSodaVariants() }
+      ]
   },
-  'cerveja': {
-      variants: [
-          { id: 'lata', name: 'Lata 350ml', image: 'https://images.unsplash.com/photo-1623594215038-d621c172d734?auto=format&fit=crop&q=80&w=400' },
-          { id: 'longneck', name: 'Long Neck', image: 'https://images.unsplash.com/photo-1618885472179-5e474019f2a9?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Heineken', 'Brahma', 'Skol', 'Amstel', 'Spaten']
+  'agua': {
+      variants: [{id: '500ml', name: '500ml', image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&q=80&w=400'}, {id: '15l', name: '1.5 Litros', image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Bonafont', variants:[{id: '500ml', name: '500ml', image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Crystal', variants:[{id: '500ml', name: '500ml', image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&q=80&w=400'}]}]
   },
   'suco': {
-      variants: [
-          { id: 'caixa', name: 'Néctar 1L', image: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=400' },
-          { id: 'polpa', name: 'Polpa Congelada', image: 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Del Valle', 'Maguary', 'Ades', 'Natural One']
-  },
-  'cha': {
-      variants: [{ id: 'caixa', name: 'Caixa (sachês)', image: 'https://images.unsplash.com/photo-1594631252845-d9b502913042?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Leão', 'Dr Oetker', 'Twinings']
-  },
-  'achocolatado': {
-      variants: [{ id: 'po', name: 'Em Pó (400g)', image: 'https://images.unsplash.com/photo-1542843137-8791a6904d14?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Nescau', 'Toddy', '3 Corações']
+      variants: [{id: '1l', name: 'Caixa 1L', image: 'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name: 'Del Valle', variants:[{id: '1l', name: 'Néctar 1L', image: 'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&q=80&w=400'}]}, {name: 'Maguary', variants: [{id: '1l', name: 'Néctar 1L', image: 'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&q=80&w=400'}]}]
   },
 
-  // --- DOCES & SNACKS ---
-  'chocolate': { variants: [{ id: 'barra', name: 'Barra', image: 'https://images.unsplash.com/photo-1606312619070-d48b706521bf?auto=format&fit=crop&q=80&w=400' }], brands: ['Nestlé', 'Lacta', 'Garoto', 'Hersheys'] },
-  'biscoito': { variants: [{ id: 'recheado', name: 'Recheado', image: 'https://images.unsplash.com/photo-1560155016-bd4879ae8f21?auto=format&fit=crop&q=80&w=400' }], brands: ['Bauducco', 'Nestlé', 'Traquinas'] },
-  'salgadinho': { variants: [{ id: 'pacote', name: 'Pacote', image: 'https://images.unsplash.com/photo-1621447504864-d8686e12698c?auto=format&fit=crop&q=80&w=400' }], brands: ['Elma Chips', 'Ruffles', 'Doritos'] },
-  'geleia': { variants: [{ id: 'pote', name: 'Pote Vidro', image: 'https://images.unsplash.com/photo-1557007629-d58673a5a782?auto=format&fit=crop&q=80&w=400' }], brands: ['Queensberry', 'Ritter'] },
-  'balas': { variants: [{ id: 'pct', name: 'Pacote', image: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&q=80&w=400' }], brands: ['Fini', 'Halls', '7Belo'] },
-  
-  // --- HIGIENE ---
+  // === LIMPEZA ===
+  'sabao': {
+      variants: createLaundryVariants(),
+      brands: [
+          { name: 'Omo', variants: createLaundryVariants() },
+          { name: 'Brilhante', variants: createLaundryVariants() },
+          { name: 'Tixan', variants: createLaundryVariants() }
+      ]
+  },
+  'detergente': {
+      variants: createCleaningVariants(),
+      brands: [{name: 'Ypê', variants: createCleaningVariants()}, {name: 'Limpol', variants: createCleaningVariants()}]
+  },
+  'papel higienico': {
+      variants: createToiletPaperVariants(),
+      brands: [{name: 'Neve', variants: createToiletPaperVariants()}, {name: 'Personal', variants: createToiletPaperVariants()}]
+  },
+
+  // === HIGIENE ===
   'shampoo': {
-    variants: [
-      { id: 'lisos', name: 'Lisos', image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=400' },
-      { id: 'cachos', name: 'Cachos', image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?auto=format&fit=crop&q=80&w=400' },
-      { id: 'masculino', name: 'Masculino', image: 'https://images.unsplash.com/photo-1600490800318-77114b74549f?auto=format&fit=crop&q=80&w=400' },
-    ],
-    brands: ['Seda', 'Pantene', 'Dove', 'L\'Oréal', 'Clear']
-  },
-  'condicionador': {
-      variants: [{ id: 'padrao', name: 'Condicionador', image: 'https://images.unsplash.com/photo-1576426863848-c21f5fc67291?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Seda', 'Pantene', 'Dove', 'L\'Oréal']
-  },
-  'sabonete': {
-      variants: [{ id: 'barra', name: 'Barra', image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?auto=format&fit=crop&q=80&w=400' }],
-      brands: ['Lux', 'Dove', 'Nivea', 'Protex', 'Phebo']
+      variants: createPersonalCareVariants(),
+      brands: [{name: 'Dove', variants: createPersonalCareVariants()}, {name: 'Pantene', variants: createPersonalCareVariants()}, {name: 'Seda', variants: createPersonalCareVariants()}]
   },
   'dental': {
-      variants: [
-          { id: 'pasta', name: 'Creme Dental', image: 'https://images.unsplash.com/photo-1559591937-e10977d4d658?auto=format&fit=crop&q=80&w=400' },
-          { id: 'escova', name: 'Escova', image: 'https://images.unsplash.com/photo-1559591937-234ab11e40c6?auto=format&fit=crop&q=80&w=400' },
-          { id: 'fio', name: 'Fio Dental', image: 'https://images.unsplash.com/photo-1588775404175-33bdf0553124?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Colgate', 'Oral-B', 'Sorriso', 'CloseUp']
+      variants: [{id:'90g', name:'Tubo 90g', image:'https://images.unsplash.com/photo-1559591937-e1dc329ef226?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name:'Colgate', variants:[{id:'90g', name:'Total 12', image:'https://images.unsplash.com/photo-1559591937-e1dc329ef226?auto=format&fit=crop&q=80&w=400'}]}, {name:'Sorriso', variants:[{id:'90g', name:'Dentes Brancos', image:'https://images.unsplash.com/photo-1559591937-e1dc329ef226?auto=format&fit=crop&q=80&w=400'}]}]
   },
   'desodorante': {
-      variants: [
-          { id: 'aerosol', name: 'Aerosol', image: 'https://images.unsplash.com/photo-1619451334792-150fd785ee74?auto=format&fit=crop&q=80&w=400' },
-          { id: 'rollon', name: 'Roll-on', image: 'https://images.unsplash.com/photo-1629198781938-166299d54e57?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Rexona', 'Dove', 'Nivea', 'Axe', 'Monange']
+      variants: [{id:'aerosol', name:'Aerosol', image: 'https://images.unsplash.com/photo-1616688587635-4e782d8c3639?auto=format&fit=crop&q=80&w=400'}],
+      brands: [{name:'Rexona', variants:[{id:'aerosol', name:'Aerosol', image: 'https://images.unsplash.com/photo-1616688587635-4e782d8c3639?auto=format&fit=crop&q=80&w=400'}]}, {name:'Nivea', variants:[{id:'aerosol', name:'Aerosol', image: 'https://images.unsplash.com/photo-1616688587635-4e782d8c3639?auto=format&fit=crop&q=80&w=400'}]}]
   },
 
-  // --- LIMPEZA ---
-  'sabao': {
-      variants: [
-          { id: 'po', name: 'Em Pó (kg)', image: 'https://images.unsplash.com/photo-1585838491738-4e897931c817?auto=format&fit=crop&q=80&w=400' },
-          { id: 'liquido', name: 'Líquido (L)', image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Omo', 'Brilhante', 'Tixan', 'Ariel', 'Ypê']
-  },
-  'detergente': { variants: [{ id: 'frasco', name: 'Frasco 500ml', image: 'https://images.unsplash.com/photo-1533633354780-d131cb09c73c?auto=format&fit=crop&q=80&w=400' }], brands: ['Ypê', 'Limpol', 'Minuano'] },
-  'amaciante': { variants: [{ id: 'frasco', name: '2 Litros', image: 'https://images.unsplash.com/photo-1585314062604-1a357de8b000?auto=format&fit=crop&q=80&w=400' }], brands: ['Comfort', 'Fofo', 'Downy', 'Ypê'] },
-  'agua sanitaria': { variants: [{ id: '1l', name: '1 Litro', image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&q=80&w=400' }], brands: ['Qboa', 'Ypê', 'Super Candida'] },
-  'desinfetante': { variants: [{ id: 'frasco', name: 'Frasco', image: 'https://images.unsplash.com/photo-1628102491629-778571d893a3?auto=format&fit=crop&q=80&w=400' }], brands: ['Pinho Sol', 'Veja', 'Ypê'] },
-  'multiuso': { variants: [{ id: 'frasco', name: 'Frasco', image: 'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&q=80&w=400' }], brands: ['Veja', 'Mr Músculo', 'Ypê'] },
-  'esponja': { variants: [{ id: 'pct', name: 'Pacote c/ 3', image: 'https://images.unsplash.com/photo-1585838491738-4e897931c817?auto=format&fit=crop&q=80&w=400' }], brands: ['Scott Brite', 'Bombril', 'Assolan'] },
-  'lixo': { variants: [{ id: 'rolo', name: 'Saco Lixo (Rolo)', image: 'https://images.unsplash.com/photo-1611039986376-7935a8df241d?auto=format&fit=crop&q=80&w=400' }], brands: ['Embalixo', 'Dover'] },
-  'papel': {
-      variants: [
-          { id: 'higienico', name: 'Papel Higiênico', image: 'https://images.unsplash.com/photo-1584556812952-905ffd0c611f?auto=format&fit=crop&q=80&w=400' },
-          { id: 'toalha', name: 'Papel Toalha', image: 'https://images.unsplash.com/photo-1610450918073-d6c292120404?auto=format&fit=crop&q=80&w=400' }
-      ],
-      brands: ['Neve', 'Personal', 'Scott', 'Snob']
-  }
+  // === HORTIFRUTI ===
+  'banana': { variants: createFruitVariants(), brands: [] },
+  'maca': { variants: createFruitVariants(), brands: [] },
+  'tomate': { variants: createVegVariants(), brands: [] },
+  'cebola': { variants: createVegVariants(), brands: [] },
+  'batata': { variants: createVegVariants(), brands: [] },
+  'alface': { variants: [{id:'un', name:'Pé', image: IMAGES.veggies}], brands: [] },
+
+  // === GENERICS / FALLBACKS FOR BIG LIST ===
+  'leite uht': { variants: createMilkVariants(), brands: [{name:'Lider', variants:createMilkVariants()}] },
+  'refrigerante cola': { variants: createSodaVariants(), brands: [{name:'Coca', variants:createSodaVariants()}] },
+  'agua mineral': { variants: [{id:'500ml', name:'500ml', image:IMAGES.generic}], brands:[] },
+  'verduras': { variants: createVegVariants(), brands: [] },
+  'legumes': { variants: createVegVariants(), brands: [] },
+  'frutas': { variants: createFruitVariants(), brands: [] },
+  'biscoitos': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [] },
+  'chocolate': { variants: [{id:'barra', name:'Barra', image:IMAGES.generic}], brands: [{name:'Lacta', variants:[{id:'barra', name:'Barra', image:IMAGES.generic}]}] },
+  'balas': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [] },
+  'cereais': { variants: [{id:'cx', name:'Caixa', image:IMAGES.generic}], brands: [{name:'Kelloggs', variants:[{id:'cx', name:'Sucrilhos', image:IMAGES.generic}]}] },
+  'temperos': { variants: [{id:'sache', name:'Sachê', image:IMAGES.generic}], brands: [{name:'Kitano', variants:[{id:'sache', name:'Sachê', image:IMAGES.generic}]}] },
+  'massa pronta': { variants: [{id:'un', name:'Pacote', image:IMAGES.pasta}], brands: [] },
+  'molhos prontos': { variants: [{id:'un', name:'Sachê', image:IMAGES.generic}], brands: [] },
+  'congelados': { variants: [{id:'cx', name:'Caixa', image:IMAGES.generic}], brands: [{name:'Sadia', variants:[{id:'cx', name:'Lasanha', image:IMAGES.generic}]}] },
+  'enlatados': { variants: [{id:'lt', name:'Lata', image:IMAGES.generic}], brands: [] },
+  'conservas': { variants: [{id:'vd', name:'Vidro', image:IMAGES.generic}], brands: [] },
+  'chas': { variants: [{id:'cx', name:'Caixa', image:IMAGES.generic}], brands: [{name:'Leão', variants:[{id:'cx', name:'Matte', image:IMAGES.generic}]}] },
+  'achocolatado': { variants: [{id:'lt', name:'Lata 400g', image:IMAGES.generic}], brands: [{name:'Nescau', variants:[{id:'lt', name:'Lata', image:IMAGES.generic}]}, {name:'Toddy', variants:[{id:'lt', name:'Lata', image:IMAGES.generic}]}] },
+  'leite condensado': { variants: [{id:'lt', name:'Lata/CX', image:IMAGES.milk}], brands: [{name:'Leite Moça', variants:[{id:'lt', name:'Lata', image:IMAGES.milk}]}] },
+  'creme de leite': { variants: [{id:'cx', name:'Caixinha', image:IMAGES.milk}], brands: [{name:'Nestlé', variants:[{id:'cx', name:'Caixinha', image:IMAGES.milk}]}] },
+  'limpeza casa': { variants: createCleaningVariants(), brands: [] },
+  'guardanapos': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [] },
+  'papel toalha': { variants: [{id:'rolos', name:'2 Rolos', image:IMAGES.generic}], brands: [{name:'Snob', variants:[{id:'rolos', name:'2 Rolos', image:IMAGES.generic}]}] },
+  'fraldas': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [{name:'Pampers', variants:[{id:'pct', name:'Pacote', image:IMAGES.generic}]}] },
+  'lixo': { variants: [{id:'rl', name:'Rolo', image:IMAGES.generic}], brands: [] },
+  'esponja': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [{name:'Bombril', variants:[{id:'pct', name:'Pacote', image:IMAGES.generic}]}] },
+  'multiuso': { variants: [{id:'frasco', name:'Frasco', image:IMAGES.detergent}], brands: [{name:'Veja', variants:[{id:'frasco', name:'Frasco', image:IMAGES.detergent}]}] },
+  'absorvente': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [{name:'Sempre Livre', variants:[{id:'pct', name:'Pacote', image:IMAGES.generic}]}] },
+  'papel aluminio': { variants: [{id:'rl', name:'Rolo', image:IMAGES.generic}], brands: [] },
+  'snacks': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [] },
+  'leite po': { variants: [{id:'lt', name:'Lata', image:IMAGES.milk}], brands: [{name:'Ninho', variants:[{id:'lt', name:'Lata', image:IMAGES.milk}]}] },
+  'castanhas': { variants: [{id:'pct', name:'Pacote', image:IMAGES.fruits}], brands: [] },
+  'doces': { variants: [{id:'un', name:'Unidade', image:IMAGES.generic}], brands: [] },
+  'pizzas': { variants: [{id:'cx', name:'Caixa', image:IMAGES.generic}], brands: [{name:'Sadia', variants:[{id:'cx', name:'Caixa', image:IMAGES.generic}]}] },
+  'vinhos': { variants: [{id:'gf', name:'Garrafa', image:IMAGES.generic}], brands: [] },
+  'destilados': { variants: [{id:'gf', name:'Garrafa', image:IMAGES.generic}], brands: [] },
+  'papinhas': { variants: [{id:'pt', name:'Pote', image:IMAGES.generic}], brands: [{name:'Nestlé', variants:[{id:'pt', name:'Pote', image:IMAGES.generic}]}] },
+  'lencos umedecidos': { variants: [{id:'pct', name:'Pacote', image:IMAGES.generic}], brands: [{name:'Huggies', variants:[{id:'pct', name:'Pacote', image:IMAGES.generic}]}] }
 };

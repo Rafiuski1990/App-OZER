@@ -101,7 +101,6 @@ export const ARARAS_MARKETS = [
 ];
 
 // Average prices database for simulation/fallback (Prices in BRL)
-// Keys must match the normalized keys used in ShoppingList.tsx or variants
 const AVERAGE_PRICES: Record<string, number> = {
   // Arroz variants
   'arroz branco 5': 26.90,
@@ -113,6 +112,22 @@ const AVERAGE_PRICES: Record<string, number> = {
   'feijao carioca': 7.49,
   'feijao preto': 8.90,
   'feijao': 7.49,
+
+  // Macarrao / Massa
+  'espaguete': 4.50,
+  'parafuso': 4.50,
+  'penne': 5.50,
+  'macarrao': 4.50,
+  'lasanha': 12.90,
+  'pizza': 14.90,
+
+  // Óleo e Temperos
+  'oleo': 6.50,
+  'azeite': 32.90,
+  'vinagre': 3.50,
+  'sal': 2.50,
+  'acucar': 4.90,
+  'molho tomate': 2.50,
 
   // Carne variants
   'picanha': 69.90,
@@ -128,89 +143,55 @@ const AVERAGE_PRICES: Record<string, number> = {
   'asinha': 16.90,
   'frango inteiro': 10.90,
   'frango': 15.90,
-  'linguica': 19.90,
-  'peixe': 29.90,
+  
+  // Frios e Laticinios
+  'leite': 5.50,
+  'manteiga': 11.90,
+  'margarina': 6.90,
+  'queijo': 8.90, // 150g ou fatia
+  'mussarela': 8.90,
+  'presunto': 5.50,
+  'mortadela': 3.50,
+  'requeijao': 7.90,
+  'iogurte': 4.50,
+  'ovos': 12.00, // duzia
 
   // Bebidas
-  'lata 350': 3.99,
-  'latao': 4.99,
-  'long neck': 5.50,
   'cerveja': 4.50,
-  'refrigerante 2l': 8.90,
   'refrigerante': 8.90,
   'agua': 2.50,
-  'suco': 8.90,
-  'cha': 5.90,
-  'achocolatado': 9.90,
+  'suco': 7.90,
+  'cafe': 17.90,
+  
+  // Padaria
+  'pao': 14.90, // kg frances
+  'pao forma': 8.50,
+  'biscoito': 3.50,
+  'bolo': 12.90,
 
-  // Café
-  'cafe po': 17.90,
-  'capsula': 22.90,
+  // Hortifruti
+  'banana': 5.90,
+  'maca': 8.90,
+  'tomate': 7.90,
+  'cebola': 5.90,
+  'batata': 6.50,
+  'alface': 3.50,
+  'fruta': 7.00,
 
-  // Hygiene
+  // Limpeza
+  'sabao': 14.90,
+  'detergente': 2.50,
+  'amaciante': 12.90,
+  'agua sanitaria': 4.50,
+  'papel higienico': 18.90,
+  
+  // Higiene
   'shampoo': 14.90,
   'condicionador': 16.90,
   'sabonete': 2.50,
-  'creme dental': 5.20,
-  'escova': 12.90,
-  'fio dental': 9.90,
+  'dental': 5.50,
   'desodorante': 13.90,
-
-  // Cleaning
-  'sabao po': 13.90,
-  'liquido': 14.90,
-  'detergente': 2.19,
-  'amaciante': 11.90,
-  'desinfetante': 7.50,
-  'agua sanitaria': 4.50,
-  'limpador': 5.90,
-  'multiuso': 5.90,
-  'esponja': 4.50,
-  'lixo': 12.90,
-  'papel toalha': 5.90,
-  'papel higienico': 21.90,
-
-  // Padaria / Mercearia
-  'pao frances': 14.90, // kg
-  'pao forma': 8.50,
-  'bolo': 12.90,
-  'torrada': 5.50,
-  'macarrao': 4.50,
-  'oleo': 6.20,
-  'azeite': 29.90,
-  'acucar': 4.89,
-  'sal': 2.50,
-  'aveia': 6.50,
-  'pipoca': 4.90,
-  'granola': 18.90,
-  'molho tomate': 2.20,
-  'ketchup': 10.90,
-  'mostarda': 8.90,
-  'maionese': 7.90,
-  'biscoito': 3.50,
-  'chocolate': 6.50,
-  'geleia': 16.90,
-  'balas': 3.50,
-  'salgadinho': 8.90,
-
-  // Hortifruti / Frios
-  'tomate': 8.90,
-  'alface': 3.50,
-  'cebola': 5.90,
-  'batata': 6.50,
-  'cenoura': 4.90,
-  'maca': 9.90,
-  'banana': 5.90,
-  'laranja': 3.90,
-  'presunto': 5.50, // 100g approx in list logic, but usually sold by kg. Adjusted for unit pack simulation
-  'queijo': 8.90,
-  'mortadela': 3.50,
-  'manteiga': 11.90,
-  'margarina': 6.90,
-  'iogurte': 4.20,
-  'sorvete': 24.90,
-  'pizza': 14.90,
-  'legumes congelados': 12.90
+  'higiene': 10.00
 };
 
 // Helper to normalize strings for key lookup
