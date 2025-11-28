@@ -10,11 +10,9 @@ export default defineConfig(({ mode }) => {
     root: '.',
     plugins: [react()],
     define: {
-      // CRITICAL: We define `process.env` to prevent crashes in browser
-      'process.env': {
-        API_KEY: env.API_KEY || "",
-        NODE_ENV: mode
-      }
+      // CRITICAL: We define specific keys to avoid overwriting the entire process.env object
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || ""),
+      'process.env.NODE_ENV': JSON.stringify(mode)
     },
     build: {
       outDir: 'dist',
