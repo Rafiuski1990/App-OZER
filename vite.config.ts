@@ -3,18 +3,22 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
-  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, (process as any).cwd(), '');
 
   return {
+    // Explicitly set root to ensure Vercel finds the entry point
+    root: '.',
     plugins: [react()],
     define: {
-      // CRITICAL: We define `process.env` as an object to prevent "ReferenceError: process is not defined"
-      // which causes White Screen of Death in many React apps migrated from Node.
+      // CRITICAL: We define `process.env` to prevent crashes in browser
       'process.env': {
         API_KEY: env.API_KEY || "",
         NODE_ENV: mode
       }
+    },
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
     }
   };
 });
