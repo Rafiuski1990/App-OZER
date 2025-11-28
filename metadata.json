@@ -1,0 +1,7 @@
+{
+  "name": "Ozer",
+  "description": "Smart supermarket price comparator with route optimization.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
